@@ -1,7 +1,7 @@
 VENV=.venv
 PY=$(VENV)/bin/python
 PIP=$(VENV)/bin/pip
-PYTEST=$(VENV)/bin/pytest
+PYTEST=$(CURDIR)/$(VENV)/bin/pytest --disable-warnings
 
 .PHONY: venv deps test_all test_unit cov clean
 
