@@ -3,7 +3,7 @@ PY=$(VENV)/bin/python
 PIP=$(VENV)/bin/pip
 PYTEST=$(CURDIR)/$(VENV)/bin/pytest --disable-warnings
 
-.PHONY: venv deps test_all test_unit cov clean
+.PHONY: venv deps test_all test_unit cov clean rgr
 
 venv:
 	python -m venv $(VENV)
@@ -31,3 +31,35 @@ cov:
 
 clean:
 	rm -rf .pytest_cache **/__pycache__ htmlcov .coverage
+
+# Simula el ciclo Red-Green-Refactor
+rgr: deps
+	@echo "RED: Modificando funciones para que fallen"
+	@cd soluciones/practica_tdd && \
+		cp counter.py counter.py.bak && \
+		cp status.py status.py.bak && \
+		printf '%s\n' \
+			'import status' \
+			'from flask import Flask' \
+			'app = Flask(__name__)' \
+			'COUNTERS = {}' \
+			'@app.route("/counters/<name>", methods=["POST"])' \
+			'def create_counter(name):' \
+			'    return {"message": "error"}, status.HTTP_404_NOT_FOUND' \
+			'@app.route("/counters/<name>", methods=["PUT"])' \
+			'def update_counter(name):' \
+			'    return {"message": "error"}, status.HTTP_404_NOT_FOUND' \
+			'@app.route("/counters/<name>", methods=["GET"])' \
+			'def read_counter(name):' \
+			'    return {"message": "error"}, status.HTTP_404_NOT_FOUND' \
+			'@app.route("/counters/<name>", methods=["DELETE"])' \
+			'def delete_counter(name):' \
+			'    return {"message": "error"}, status.HTTP_404_NOT_FOUND' \
+			> counter.py && \
+		$(PYTEST) -q || echo "✓ Tests fallaron como esperado (RED)"
+	@echo ""
+	@echo "GREEN: Restaurando implementaciones correctas"
+	@cd soluciones/practica_tdd && \
+		mv counter.py.bak counter.py && \
+		mv status.py.bak status.py && \
+		$(PYTEST) -q && echo "✓ Tests pasaron (GREEN)"
