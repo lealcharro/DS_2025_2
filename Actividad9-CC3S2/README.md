@@ -54,6 +54,18 @@
 
 ## Resultados
 
-- En total hay 46 tests repartidos 7 módulos de prueba en las carpetas. 
+- En total hay 46 tests repartidos 7 módulos de prueba en las carpetas.
 
 - El coverage llegó a 100% en models/__init__.py y models/account.py con cobertura de ramas activada.
+
+- Las ramas de error en los endpoints (como intentar actualizar un contador inexistente) necesitaron tests explícitos que verificaran tanto el flujo exitoso como el fallido. La cobertura de ramas fue particularmente útil para identificar condicionales que solo se probaban en un sentido (ej: `if name in COUNTERS` requería probar tanto cuando existe como cuando no existe).
+
+- Se implementó un comando especial para simular el ciclo Red-Green-Refactor de TDD de forma automatizada:
+
+1. **RED**: Crea temporalmente una versión stub de `counter.py` donde todas las funciones devuelven códigos HTTP incorrectos (404 en lugar de 201, 200, etc.). Esto simula el estado inicial de TDD donde los tests fallan porque la implementación aún no existe o es incorrecta.
+
+2. **GREEN**: Restaura la implementación correcta desde el archivo `.bak`, haciendo que todos los tests pasen.
+
+3. **REFACTOR**: Re-ejecuta los tests para validar que el código refactorizado mantiene el comportamiento correcto.
+
+La implementación usa `printf` para generar el código stub en un solo bloque, evitando múltiples llamadas a `echo`. Los archivos originales se respaldan con la extensión `.bak` y se restauran automáticamente al finalizar cada fase.
