@@ -15,6 +15,8 @@ from unittest.mock import Mock, patch
 from models import IMDb
 from requests import Response
 
+from models.imdb import TIMEOUT, _enforce_policies
+
 
 # Fixture para cargar los datos de IMDb desde un archivo JSON
 @pytest.fixture(scope="session")
@@ -52,7 +54,8 @@ class TestIMDbDatabase:
 
         assert resultado == self.imdb_data["search_title"]
         mock_get.assert_called_once_with(
-            "https://imdb-api.com/API/SearchTitle/fake_api_key/Bambi"
+            "https://imdb-api.com/API/SearchTitle/fake_api_key/Bambi",
+            timeout=TIMEOUT,
         )
 
     @patch("models.imdb.requests.get")
@@ -69,7 +72,8 @@ class TestIMDbDatabase:
 
         assert resultado == {}
         mock_get.assert_called_once_with(
-            "https://imdb-api.com/API/SearchTitle/fake_api_key/TituloInexistente"
+            "https://imdb-api.com/API/SearchTitle/fake_api_key/TituloInexistente",
+            timeout=TIMEOUT,
         )
 
     @patch("models.imdb.requests.get")
@@ -86,7 +90,8 @@ class TestIMDbDatabase:
 
         assert resultado == self.imdb_data["movie_reviews"]
         mock_get.assert_called_once_with(
-            "https://imdb-api.com/API/Reviews/fake_api_key/tt1375666"
+            "https://imdb-api.com/API/Reviews/fake_api_key/tt1375666",
+            timeout=TIMEOUT,
         )
 
     @patch("models.imdb.requests.get")
@@ -103,7 +108,8 @@ class TestIMDbDatabase:
 
         assert resultado == self.imdb_data["movie_ratings"]
         mock_get.assert_called_once_with(
-            "https://imdb-api.com/API/Ratings/fake_api_key/tt1375666"
+            "https://imdb-api.com/API/Ratings/fake_api_key/tt1375666",
+            timeout=TIMEOUT,
         )
 
     @patch("models.imdb.requests.get")
@@ -141,3 +147,8 @@ class TestIMDbDatabase:
         assert resultados["title"] == "Bambi"
         assert resultados["filmAffinity"] == 3
         assert resultados["rottenTomatoes"] == 5
+
+
+def test_politica_rechaza_host_no_permitido():
+    with pytest.raises(ValueError):
+        _enforce_policies("https://malicioso.evil/xx")
