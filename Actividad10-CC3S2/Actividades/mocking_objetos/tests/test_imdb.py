@@ -152,3 +152,18 @@ class TestIMDbDatabase:
 def test_politica_rechaza_host_no_permitido():
     with pytest.raises(ValueError):
         _enforce_policies("https://malicioso.evil/xx")
+
+def test_search_titles_con_cliente_inyectado(imdb_data):
+    http = Mock()
+    mock_resp = Mock(status_code=200)
+    mock_resp.json.return_value = imdb_data["search_title"]
+    http.get.return_value = mock_resp
+
+    imdb = IMDb(apikey="fake_api_key", http_client=http)
+    out = imdb.search_titles("Bambi")
+
+    http.get.assert_called_once_with(
+        "https://imdb-api.com/API/SearchTitle/fake_api_key/Bambi",
+        timeout=TIMEOUT,  # si ya implementaste políticas
+    )
+    assert out == imdb_data["search_title"]
