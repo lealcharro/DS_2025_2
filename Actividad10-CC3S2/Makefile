@@ -30,6 +30,8 @@ help:
 	@echo "  test_all             Ejecuta pytest en todas las actividades"
 	@echo "  coverage             Ejecuta pytest con cobertura unificada (todas las actividades)"
 	@echo "  coverage_individual  Ejecuta la cobertura para cada actividad por separado"
+	@echo "  gates                Ejecuta lint y coverage (quality gates)"
+	@echo "  run                  Ejecuta gates y luego la aplicación principal"
 	@echo "  clean                Elimina archivos temporales, caches, etc."
 	@echo
 	@echo "Opciones:"
@@ -131,3 +133,12 @@ clean:
 	rm -rf .coverage htmlcov htmlcov_* Actividades/**/.coverage 2>/dev/null || true
 	coverage erase || true
 	@echo "Limpieza completa."
+
+# Gates y Run
+
+.PHONY: gates run
+gates: lint coverage
+	@echo "Gates OK"
+
+run: gates
+	python -m app.main
