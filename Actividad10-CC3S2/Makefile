@@ -106,7 +106,7 @@ coverage:
 	done
 	@echo "COVERAGE COMBINADO"
 	@coverage combine $$(for a in $(ACTIVITIES); do echo Actividades/$$a/.coverage; done) || true
-	@coverage report -m
+	@coverage report -m --fail-under=85
 	@coverage html -d htmlcov
 
 coverage_individual:

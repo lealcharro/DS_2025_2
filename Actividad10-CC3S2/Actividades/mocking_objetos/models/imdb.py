@@ -4,11 +4,12 @@ Implementa las APIs SearchTitle, Reviews y Ratings
 """
 
 import logging
+import os
+import urllib.parse
 from typing import Any, Dict
 
 import requests
 
-import os, urllib.parse
 ALLOWED_HOSTS = {"imdb-api.com"}
 TIMEOUT = float(os.getenv("HTTP_TIMEOUT", "2.0"))
 

@@ -13,9 +13,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from unittest.mock import Mock, patch
 
 from models import IMDb
-from requests import Response
-
 from models.imdb import TIMEOUT, _enforce_policies
+from requests import Response
 
 
 # Fixture para cargar los datos de IMDb desde un archivo JSON
@@ -152,6 +151,12 @@ class TestIMDbDatabase:
 def test_politica_rechaza_host_no_permitido():
     with pytest.raises(ValueError):
         _enforce_policies("https://malicioso.evil/xx")
+
+
+def test_politica_rechaza_http():
+    with pytest.raises(ValueError, match="Se requiere HTTPS"):
+        _enforce_policies("http://imdb-api.com/API/test")
+
 
 def test_search_titles_con_cliente_inyectado(imdb_data):
     http = Mock()

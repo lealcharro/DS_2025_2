@@ -21,7 +21,6 @@ def create_counter(name):
     Retorna 409 (CONFLICT) si el contador ya existía.
     """
     app.logger.info(f"Solicitud para crear el contador: {name}")
-    global COUNTERS
 
     if name in COUNTERS:
         return {"message": f"El contador '{name}' ya existe"}, status.HTTP_409_CONFLICT
@@ -38,7 +37,6 @@ def update_counter(name):
     Retorna 404 (NOT FOUND) si el contador no existe.
     """
     app.logger.info(f"Solicitud para actualizar el contador: {name}")
-    global COUNTERS
 
     if name not in COUNTERS:
         return {"message": f"El contador '{name}' no existe"}, status.HTTP_404_NOT_FOUND
@@ -56,7 +54,6 @@ def read_counter(name):
     Retorna 404 (NOT FOUND) si el contador no existe.
     """
     app.logger.info(f"Solicitud para leer el contador: {name}")
-    global COUNTERS
 
     if name not in COUNTERS:
         return {"message": f"El contador '{name}' no existe"}, status.HTTP_404_NOT_FOUND
@@ -72,7 +69,6 @@ def delete_counter(name):
     Retorna 404 (NOT FOUND) si el contador no existe.
     """
     app.logger.info(f"Solicitud para eliminar el contador: {name}")
-    global COUNTERS
 
     if name not in COUNTERS:
         return {"message": f"El contador '{name}' no existe"}, status.HTTP_404_NOT_FOUND
